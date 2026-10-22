@@ -206,7 +206,7 @@ footer{margin-top:36px;font-size:13px;color:var(--muted);display:flex;flex-wrap:
         <h3>Mắt hay chữ thắng?</h3>
         <p class="q">Bạn gọi tên màu nhanh đến đâu khi chữ cố tình đánh lừa?</p>
         <p class="d">Hiệu ứng Stroop · đo thời gian phản ứng từng mili giây.</p>
-        <span class="meta"><span>24 lượt · 2 phút</span><span class="go">Bắt đầu →</span></span>
+        <span class="meta"><span>4 lượt làm quen + 24 lượt · 2 phút</span><span class="go">Bắt đầu →</span></span>
       </button>
       <button class="card t-violet" data-open="span">
         <span class="ico" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg></span>
@@ -268,7 +268,7 @@ footer{margin-top:36px;font-size:13px;color:var(--muted);display:flex;flex-wrap:
           <p>Người trưởng thành đọc chữ gần như tự động. Khi nghĩa của chữ khác với màu mực, não phải "phanh" phản xạ đọc lại, nên bạn chậm hơn và dễ bấm nhầm.</p>
           <h4>Thí nghiệm gồm</h4>
           <ul>
-            <li>24 lượt: 12 lượt màu khớp chữ, 12 lượt không khớp.</li>
+            <li>4 lượt làm quen đầu tiên không tính điểm, sau đó 24 lượt: 12 lượt màu khớp chữ, 12 lượt không khớp.</li>
             <li>Đo thời gian phản ứng (ms) và tỷ lệ đúng.</li>
             <li>Trên máy tính có thể bấm phím 1–4.</li>
           </ul>
@@ -419,11 +419,14 @@ footer{margin-top:36px;font-size:13px;color:var(--muted);display:flex;flex-wrap:
     const t = [];
     for (let k = 0; k < 12; k++) { const c = k % 4; t.push({ word: c, ink: c, cong: true }); }
     for (let k = 0; k < 12; k++) { const w = k % 4; let ink; do { ink = Math.floor(Math.random() * 4); } while (ink === w); t.push({ word: w, ink, cong: false }); }
-    return shuffle(t);
+    const pr = [];
+    for (let k = 0; k < 4; k++) { const w = Math.floor(Math.random() * 4); let ink = w; if (k % 2) { do { ink = Math.floor(Math.random() * 4); } while (ink === w); } pr.push({ word: w, ink, cong: !(k % 2), practice: true }); }
+    return shuffle(pr).concat(shuffle(t));
   }
   const stSetButtons = on => stChoices.querySelectorAll('button').forEach(b => b.disabled = !on);
   function stNext() {
-    $('#st-meter').textContent = `${stIdx} / 24`;
+    const nPr = stTrials.filter(t => t.practice).length;
+    $('#st-meter').textContent = stIdx < nPr ? `Làm quen ${stIdx + 1} / ${nPr}` : `${Math.min(stIdx - nPr, 24)} / 24`;
     if (stIdx >= stTrials.length) return stFinish();
     const fix = $('#st-fix'), word = $('#st-word');
     fix.hidden = false; word.hidden = true; stLive = false; stSetButtons(false);
@@ -454,7 +457,7 @@ footer{margin-top:36px;font-size:13px;color:var(--muted);display:flex;flex-wrap:
     stSetButtons(false);
     $('#st-run').hidden = true; $('#st-intro').hidden = false;
     $('#st-start').textContent = 'Làm lại một lần nữa';
-    const by = cong => stTrials.filter(t => t.cong === cong);
+    const by = cong => stTrials.filter(t => !t.practice && t.cong === cong);
     const rt = cong => mean(by(cong).filter(t => t.correct).map(t => t.rt));
     const acc = cong => Math.round(100 * by(cong).filter(t => t.correct).length / 12);
     const rc = rt(true), ri = rt(false), eff = ri - rc;
