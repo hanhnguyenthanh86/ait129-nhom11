@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Phòng thí nghiệm Tâm lý học</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: trang chào mời (câu hỏi lớn + chữ Stroop đổi màu + 3 thẻ thí nghiệm) → bấm thẻ để vào từng thí nghiệm, khoa học nằm cạnh khu làm bài */
+:root{
+  --bg:#f4f3fb; --surface:#ffffff; --surface-2:#f0eef9; --line:#e0dcf0;
+  --fg:#1d1838; --muted:#6a6487; --accent:#5b45e0; --accent-ink:#ffffff; --accent-soft:#ebe7ff;
+  --coral:#f0563f; --coral-soft:#ffe8e3; --violet:#5b45e0; --violet-soft:#ebe7ff; --teal:#0f9e8a; --teal-soft:#dcf5f0;
+  --good:#1f9254; --bad:#d63a2f;
+  --c-red:#e0262e; --c-blue:#1f6fe0; --c-yellow:#e0a000; --c-purple:#9233c4;
+  --f-display:"Nunito","Be Vietnam Pro",system-ui,sans-serif;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 2px rgba(40,30,90,.06),0 8px 24px rgba(40,30,90,.08);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13111f; --surface:#1d1a2e; --surface-2:#252139; --line:#353050;
+  --fg:#efecfb; --muted:#a39dc2; --accent:#9b8cff; --accent-ink:#15112b; --accent-soft:#2c2650;
+  --coral:#ff7b66; --coral-soft:#3a2420; --violet:#9b8cff; --violet-soft:#2c2650; --teal:#3fd3bc; --teal-soft:#16332f;
+  --good:#5fd38f; --bad:#ff7d73;
+  --c-red:#ff5a5a; --c-blue:#5c9dff; --c-yellow:#ffcb3d; --c-purple:#c886ff;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13111f; --surface:#1d1a2e; --surface-2:#252139; --line:#353050;
+  --fg:#efecfb; --muted:#a39dc2; --accent:#9b8cff; --accent-ink:#15112b; --accent-soft:#2c2650;
+  --coral:#ff7b66; --coral-soft:#3a2420; --violet:#9b8cff; --violet-soft:#2c2650; --teal:#3fd3bc; --teal-soft:#16332f;
+  --good:#5fd38f; --bad:#ff7d73;
+  --c-red:#ff5a5a; --c-blue:#5c9dff; --c-yellow:#ffcb3d; --c-purple:#c886ff;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:1060px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font-family:inherit}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* top bar */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.brand{display:flex;align-items:center;gap:10px;font:800 16px var(--f-display);color:var(--fg);background:none;border:0;padding:6px 0;cursor:pointer}
+.brand-mark{width:32px;height:32px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink)}
+.chip{font:600 12px var(--f-body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:28px;align-items:center;padding-block:28px 32px}
+@media (max-width:820px){.hero{grid-template-columns:1fr;gap:20px;padding-block:16px 24px}}
+.hero h1{font:900 clamp(32px,6vw,54px)/1.08 var(--f-display);margin:0 0 14px;letter-spacing:-.01em;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{font-size:17px;color:var(--muted);margin:0 0 22px;max-width:46ch}
+.cta-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:700 16px var(--f-body);padding:13px 22px;border-radius:14px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 35%,transparent)}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent);box-shadow:none}
+.btn.sm{font-size:14px;padding:10px 16px;border-radius:12px}
+.hint{font-size:13px;color:var(--muted)}
+
+.teaser{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px 22px;box-shadow:var(--shadow);text-align:center;position:relative;overflow:hidden}
+.teaser::before{content:"";position:absolute;inset:-40% -20% auto auto;width:220px;height:220px;border-radius:50%;background:var(--coral-soft);z-index:0}
+.teaser::after{content:"";position:absolute;inset:auto auto -35% -15%;width:180px;height:180px;border-radius:50%;background:var(--teal-soft);z-index:0}
+.teaser > *{position:relative;z-index:1}
+.teaser .ask{font:700 14px var(--f-body);color:var(--muted);margin:0}
+.teaser .word{font:900 clamp(56px,11vw,84px)/1.1 var(--f-display);letter-spacing:.03em;margin:10px 0;transition:color .25s}
+.reveal{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.reveal button{font:700 14px var(--f-body);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);cursor:pointer}
+.reveal button:hover{border-color:var(--accent)}
+.teaser .verdict{min-height:24px;margin:12px 0 0;font-size:14px;color:var(--muted)}
+
+/* experiment cards */
+.section-title{font:800 22px var(--f-display);margin:8px 0 4px}
+.section-sub{color:var(--muted);margin:0 0 16px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:820px){.cards{grid-template-columns:1fr}}
+.card{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow);transition:transform .18s,border-color .18s}
+.card:hover{transform:translateY(-3px);border-color:var(--tone)}
+.card:focus-visible{outline:3px solid var(--tone);outline-offset:3px}
+.card .ico{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--tone-soft);color:var(--tone)}
+.card h3{font:800 20px/1.25 var(--f-display);margin:0}
+.card .q{font-weight:600;margin:0}
+.card .d{color:var(--muted);font-size:14px;margin:0}
+.card .meta{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;font-size:13px;color:var(--muted)}
+.card .go{font-weight:700;color:var(--tone)}
+.t-coral{--tone:var(--coral);--tone-soft:var(--coral-soft)}
+.t-violet{--tone:var(--violet);--tone-soft:var(--violet-soft)}
+.t-teal{--tone:var(--teal);--tone-soft:var(--teal-soft)}
+
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:28px;padding:20px;border-radius:20px;background:var(--surface-2)}
+@media (max-width:640px){.steps{grid-template-columns:1fr}}
+.step{display:flex;gap:12px;align-items:flex-start}
+.step b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font:800 14px var(--f-display);color:var(--accent)}
+.step p{margin:0;font-size:14px}
+.step strong{display:block;font-size:15px}
+
+/* experiment view */
+.exp-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:8px 0 16px}
+.back{font:600 14px var(--f-body);color:var(--muted);background:none;border:0;cursor:pointer;padding:8px 0}
+.back:hover{color:var(--fg)}
+.switch{display:flex;gap:6px;flex-wrap:wrap}
+.switch button{font:600 13px var(--f-body);padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+.switch button[aria-current="true"]{background:var(--tone);border-color:var(--tone);color:var(--surface)}
+.exp-title{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.exp-title .ico{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:var(--tone-soft);color:var(--tone);flex:none}
+.exp-title h2{font:900 clamp(24px,4.5vw,34px)/1.15 var(--f-display);margin:0;text-wrap:balance}
+.exp-title p{margin:2px 0 0;color:var(--muted)}
+.sheet{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.sheet{grid-template-columns:1fr}}
+.bench{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px;min-width:0;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.bench-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.bench-head h3{font:800 17px var(--f-display);margin:0}
+.meter{font:600 13px var(--f-mono);color:var(--tone);background:var(--tone-soft);padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums}
+.stage{min-height:240px;display:grid;place-items:center;background:var(--surface-2);border-radius:16px;padding:22px;text-align:center}
+.stimulus{font:900 clamp(48px,11vw,80px)/1 var(--f-display);letter-spacing:.04em}
+.fix{font:700 40px var(--f-mono);color:var(--muted)}
+.choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:440px){.choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.choice{font:800 16px var(--f-display);padding:14px 8px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.choice .k{display:block;font:500 11px var(--f-mono);color:var(--muted);margin-top:2px}
+.choice:hover:not(:disabled){border-color:var(--tone)}
+.choice:disabled{opacity:.45;cursor:default}
+.notes{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px 22px;min-width:0}
+.notes .tag{display:inline-block;font:700 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--tone);margin-bottom:6px}
+.notes h4{font:800 16px var(--f-display);margin:14px 0 4px}
+.notes h4:first-of-type{margin-top:4px}
+.notes p,.notes li{margin:0 0 8px;font-size:14px}
+.notes ul{padding-left:18px;margin:0}
+.notes .ref{font:500 12px var(--f-mono);color:var(--muted);border-top:1px solid var(--line);padding-top:10px;margin-top:12px}
+
+.results{display:grid;gap:12px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--surface-2);border-radius:14px;padding:12px 14px}
+.stat .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.stat .val{font:800 26px var(--f-mono);font-variant-numeric:tabular-nums}
+.stat .unit{font:500 13px var(--f-body);color:var(--muted);margin-left:4px}
+.bars{display:grid;gap:8px}
+.bar-row{display:grid;grid-template-columns:96px minmax(0,1fr) 70px;gap:10px;align-items:center;font-size:13px}
+.bar-track{height:14px;background:var(--surface-2);border-radius:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:7px}
+.bar-val{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.callout{background:var(--tone-soft);border-radius:14px;padding:14px 16px;margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.next-up{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px dashed var(--line);border-radius:14px;padding:12px 14px}
+.digit{font:800 clamp(72px,16vw,104px)/1 var(--f-mono)}
+.span-input{font:700 26px var(--f-mono);letter-spacing:.2em;text-align:center;width:100%;max-width:340px;padding:10px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--fg)}
+.trail{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pip{font:600 12px var(--f-mono);padding:4px 8px;border-radius:8px;border:1px solid var(--line)}
+.pip.ok{color:var(--good);border-color:var(--good)}
+.pip.no{color:var(--bad);border-color:var(--bad)}
+.q-text{font:800 19px/1.4 var(--f-display);margin:0;text-wrap:pretty}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:500 15px var(--f-body);padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--tone)}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--surface))}
+.opt:disabled{cursor:default}
+.progress{height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.progress > i{display:block;height:100%;background:var(--tone);transition:width .3s}
+footer{margin-top:36px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between;border-top:1px solid var(--line);padding-top:16px}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:.0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <button class="brand" id="go-home" aria-label="Về trang đầu">
+      <span class="brand-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21.5h11.6a2 2 0 0 0 1.7-3L14 9V3"/><path d="M7.5 15h9"/></svg></span>
+      Phòng thí nghiệm Tâm lý học
+    </button>
+    <span class="chip">AIT129 · Ngành Tâm lý học</span>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <main id="v-home">
+    <section class="hero">
+      <div>
+        <h1>Bộ não của bạn có <em>nghe lời</em> bạn không?</h1>
+        <p>Ba thử thách nhỏ, mỗi cái chỉ 2 phút, giúp bạn tự trải nghiệm những hiện tượng mà các nhà tâm lý học đã phát hiện cách đây gần một thế kỷ. Không cần đăng nhập, làm ngay trên điện thoại.</p>
+        <div class="cta-row">
+          <button class="btn" data-open="stroop">Thử ngay thí nghiệm đầu tiên</button>
+          <span class="hint">Khoảng 6 phút cho cả ba</span>
+        </div>
+      </div>
+      <div class="teaser" aria-live="polite">
+        <p class="ask">Nhanh nào: chữ dưới đây có <b>màu</b> gì?</p>
+        <p class="word" id="tz-word" style="color:var(--c-blue)">ĐỎ</p>
+        <div class="reveal" id="tz-choices"></div>
+        <p class="verdict" id="tz-verdict">Bạn có thấy mình hơi khựng lại một chút không?</p>
+      </div>
+    </section>
+
+    <h2 class="section-title">Chọn một thử thách</h2>
+    <p class="section-sub">Làm theo thứ tự nào cũng được. Cuối mỗi phần, bạn sẽ thấy kết quả của mình so với các nghiên cứu khoa học.</p>
+    <div class="cards">
+      <button class="card t-coral" data-open="stroop">
+        <span class="ico" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <h3>Mắt hay chữ thắng?</h3>
+        <p class="q">Bạn gọi tên màu nhanh đến đâu khi chữ cố tình đánh lừa?</p>
+        <p class="d">Hiệu ứng Stroop · đo thời gian phản ứng từng mili giây.</p>
+        <span class="meta"><span>24 lượt · 2 phút</span><span class="go">Bắt đầu →</span></span>
+      </button>
+      <button class="card t-violet" data-open="span">
+        <span class="ico" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg></span>
+        <h3>Bạn nhớ được mấy số?</h3>
+        <p class="q">Dãy số dài dần. Bạn sẽ dừng ở 5, 7 hay 9?</p>
+        <p class="d">Trí nhớ ngắn hạn · con số 7 ± 2 của Miller.</p>
+        <span class="meta"><span>Khoảng 2–3 phút</span><span class="go">Bắt đầu →</span></span>
+      </button>
+      <button class="card t-teal" data-open="quiz">
+        <span class="ico" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg></span>
+        <h3>Bạn hiểu Freud đến đâu?</h3>
+        <p class="q">10 câu về các nhà tâm lý học nổi tiếng, có giải thích ngay.</p>
+        <p class="d">Freud, Piaget, Vygotsky, Erikson, Pavlov, Skinner, Maslow, Ekman.</p>
+        <span class="meta"><span>10 câu · 3 phút</span><span class="go">Bắt đầu →</span></span>
+      </button>
+    </div>
+
+    <div class="steps">
+      <div class="step"><b>1</b><p><strong>Chọn thử thách</strong>Mỗi thẻ là một thí nghiệm kinh điển, đã được thu gọn cho vừa màn hình.</p></div>
+      <div class="step"><b>2</b><p><strong>Làm thật nhanh và thật</strong>Không có đúng sai về con người, chỉ có dữ liệu về cách bộ não làm việc.</p></div>
+      <div class="step"><b>3</b><p><strong>So với khoa học</strong>Xem kết quả, đọc lý do đằng sau, rồi sao chép gửi cho nhóm.</p></div>
+    </div>
+  </main>
+
+  <!-- ============ EXPERIMENT VIEW ============ -->
+  <main id="v-exp" hidden>
+    <div class="exp-head">
+      <button class="back" id="back">← Tất cả thử thách</button>
+      <nav class="switch" aria-label="Chuyển thử thách">
+        <button class="t-coral" data-switch="stroop">Stroop</button>
+        <button class="t-violet" data-switch="span">Trí nhớ</button>
+        <button class="t-teal" data-switch="quiz">Quiz</button>
+      </nav>
+    </div>
+
+    <!-- STROOP -->
+    <section id="p-stroop" class="t-coral fade" hidden>
+      <div class="exp-title">
+        <span class="ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <div><h2>Mắt hay chữ thắng?</h2><p>Bấm vào <b>màu của mực</b>, đừng đọc chữ.</p></div>
+      </div>
+      <div class="sheet">
+        <div class="bench">
+          <div class="bench-head"><h3>Thử thách</h3><span class="meter" id="st-meter">0 / 24</span></div>
+          <div class="stage">
+            <div id="st-intro">
+              <p class="stimulus" style="color:var(--c-purple);margin:0 0 6px">VÀNG</p>
+              <p class="muted" style="margin:0 0 16px">Chữ VÀNG in màu tím, vậy đáp án là <b>TÍM</b>.</p>
+              <button class="btn" id="st-start">Sẵn sàng, bắt đầu!</button>
+            </div>
+            <div id="st-run" hidden><span class="fix" id="st-fix">+</span><span class="stimulus" id="st-word" hidden></span></div>
+          </div>
+          <div class="choices" id="st-choices"></div>
+          <div class="results" id="st-results" hidden></div>
+        </div>
+        <aside class="notes">
+          <span class="tag">Khoa học đằng sau</span>
+          <h4>Chuyện gì đang xảy ra?</h4>
+          <p>Người trưởng thành đọc chữ gần như tự động. Khi nghĩa của chữ khác với màu mực, não phải "phanh" phản xạ đọc lại, nên bạn chậm hơn và dễ bấm nhầm.</p>
+          <h4>Thí nghiệm gồm</h4>
+          <ul>
+            <li>24 lượt: 12 lượt màu khớp chữ, 12 lượt không khớp.</li>
+            <li>Đo thời gian phản ứng (ms) và tỷ lệ đúng.</li>
+            <li>Trên máy tính có thể bấm phím 1–4.</li>
+          </ul>
+          <p class="ref">Stroop, J. R. (1935). Journal of Experimental Psychology, 18(6), 643–662.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- DIGIT SPAN -->
+    <section id="p-span" class="t-violet fade" hidden>
+      <div class="exp-title">
+        <span class="ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg></span>
+        <div><h2>Bạn nhớ được mấy số?</h2><p>Nhìn dãy số, rồi gõ lại đúng thứ tự.</p></div>
+      </div>
+      <div class="sheet">
+        <div class="bench">
+          <div class="bench-head"><h3>Thử thách</h3><span class="meter" id="sp-meter">Độ dài: 3</span></div>
+          <div class="stage">
+            <div id="sp-idle">
+              <p class="digit" style="color:var(--tone);margin:0 0 6px">3 · 8 · 1</p>
+              <p class="muted" style="margin:0 0 16px">Bắt đầu với 3 số. Nhớ đúng thì dãy dài thêm 1 số.</p>
+              <button class="btn" id="sp-start">Sẵn sàng, bắt đầu!</button>
+            </div>
+            <div id="sp-show" hidden><span class="digit" id="sp-digit"></span></div>
+            <form id="sp-form" hidden style="width:100%;display:grid;gap:12px;justify-items:center">
+              <label for="sp-input" class="muted">Gõ lại dãy số theo đúng thứ tự</label>
+              <input id="sp-input" class="span-input" inputmode="numeric" autocomplete="off" pattern="[0-9]*">
+              <button class="btn" type="submit">Kiểm tra</button>
+            </form>
+            <div id="sp-feedback" hidden></div>
+          </div>
+          <div class="trail" id="sp-trail" aria-label="Lịch sử các lượt"></div>
+          <div class="results" id="sp-results" hidden></div>
+        </div>
+        <aside class="notes">
+          <span class="tag">Khoa học đằng sau</span>
+          <h4>Con số 7 ± 2</h4>
+          <p>Năm 1956, George Miller nhận thấy con người thường giữ được khoảng 7 ± 2 đơn vị thông tin trong trí nhớ ngắn hạn cùng lúc.</p>
+          <h4>Mẹo nhớ nhiều hơn</h4>
+          <p>Gom số thành cụm, như đọc số điện thoại 0912 · 345 · 678. Nghiên cứu sau này của Cowan (2001) cho rằng nếu không gom cụm, ta chỉ nhớ chắc khoảng 4 ± 1 đơn vị.</p>
+          <h4>Luật chơi</h4>
+          <ul>
+            <li>Mỗi số hiện khoảng 1 giây.</li>
+            <li>Sai 2 lần ở cùng độ dài thì dừng.</li>
+          </ul>
+          <p class="ref">Miller, G. A. (1956). Psychological Review, 63(2), 81–97.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="p-quiz" class="t-teal fade" hidden>
+      <div class="exp-title">
+        <span class="ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg></span>
+        <div><h2>Bạn hiểu Freud đến đâu?</h2><p>10 câu, chọn đáp án để xem giải thích ngay.</p></div>
+      </div>
+      <div class="sheet">
+        <div class="bench">
+          <div class="bench-head"><h3>Câu hỏi</h3><span class="meter" id="qz-meter">1 / 10</span></div>
+          <div class="progress" aria-hidden="true"><i id="qz-bar" style="width:0%"></i></div>
+          <div id="qz-body" style="display:grid;gap:14px"></div>
+        </div>
+        <aside class="notes">
+          <span class="tag">Phạm vi câu hỏi</span>
+          <ul>
+            <li>Nhận thức: Stroop, Miller</li>
+            <li>Phát triển: Piaget, Vygotsky, Erikson</li>
+            <li>Phân tâm học: Freud</li>
+            <li>Hành vi: Pavlov, Skinner</li>
+            <li>Nhân văn: Maslow</li>
+            <li>Cảm xúc: Ekman</li>
+          </ul>
+          <p class="ref">Nội dung do AI hỗ trợ soạn, nhóm đã đối chiếu với giáo trình Tâm lý học đại cương.</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Dự án tổng hợp AIT129 – Trí tuệ nhân tạo ứng dụng</span>
+    <span>Tạo bằng Claude (Artifacts)</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+  const COLORS = [
+    { name: 'ĐỎ', css: 'var(--c-red)' },
+    { name: 'XANH', css: 'var(--c-blue)' },
+    { name: 'VÀNG', css: 'var(--c-yellow)' },
+    { name: 'TÍM', css: 'var(--c-purple)' },
+  ];
+
+  /* ---------- Navigation ---------- */
+  const NAMES = { stroop: 'Stroop', span: 'Trí nhớ', quiz: 'Quiz' };
+  let current = null;
+  function open(id) {
+    current = id;
+    $('#v-home').hidden = true; $('#v-exp').hidden = false;
+    ['stroop', 'span', 'quiz'].forEach(k => $('#p-' + k).hidden = k !== id);
+    document.querySelectorAll('[data-switch]').forEach(b => b.setAttribute('aria-current', b.dataset.switch === id));
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
+  function home() { current = null; $('#v-exp').hidden = true; $('#v-home').hidden = false; window.scrollTo(0, 0); }
+  document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => open(b.dataset.open)));
+  document.querySelectorAll('[data-switch]').forEach(b => b.addEventListener('click', () => open(b.dataset.switch)));
+  $('#back').addEventListener('click', home);
+  $('#go-home').addEventListener('click', home);
+  const nextOf = { stroop: ['span', 'Bạn nhớ được mấy số?'], span: ['quiz', 'Bạn hiểu Freud đến đâu?'], quiz: ['stroop', 'Mắt hay chữ thắng?'] };
+  function nextUp(id) {
+    const [n, label] = nextOf[id];
+    return `<div class="next-up"><span class="muted">Thử thách tiếp theo: <b style="color:var(--fg)">${label}</b></span><button class="btn sm ghost" data-goto="${n}">Đi tiếp →</button></div>`;
+  }
+  document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) open(g.dataset.goto); });
+
+  /* ---------- Hero teaser ---------- */
+  const tzWord = $('#tz-word'), tzChoices = $('#tz-choices'), tzVerdict = $('#tz-verdict');
+  let tzCur = { word: 0, ink: 1 };
+  COLORS.forEach((c, i) => {
+    const b = document.createElement('button'); b.textContent = c.name;
+    b.addEventListener('click', () => {
+      tzVerdict.innerHTML = i === tzCur.ink
+        ? 'Chính xác! Nhưng bạn có thấy chữ <b>' + COLORS[tzCur.word].name + '</b> cứ muốn bật ra trước không? Đó là hiệu ứng Stroop.'
+        : 'Bộ não vừa đọc chữ thay vì nhìn màu. Rất bình thường, ai cũng vậy. Thử lại với chữ mới nhé.';
+      setTimeout(tzNew, 1600);
+    });
+    tzChoices.appendChild(b);
+  });
+  function tzNew() {
+    const w = Math.floor(Math.random() * 4); let ink; do { ink = Math.floor(Math.random() * 4); } while (ink === w);
+    tzCur = { word: w, ink }; tzWord.textContent = COLORS[w].name; tzWord.style.color = COLORS[ink].css;
+  }
+
+  /* ---------- Stroop ---------- */
+  const stChoices = $('#st-choices');
+  COLORS.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.className = 'choice'; b.disabled = true;
+    b.innerHTML = `${c.name}<span class="k">phím ${i + 1}</span>`;
+    b.addEventListener('click', () => stAnswer(i));
+    stChoices.appendChild(b);
+  });
+  let stTrials = [], stIdx = 0, stT0 = 0, stLive = false;
+  function stBuild() {
+    const t = [];
+    for (let k = 0; k < 12; k++) { const c = k % 4; t.push({ word: c, ink: c, cong: true }); }
+    for (let k = 0; k < 12; k++) { const w = k % 4; let ink; do { ink = Math.floor(Math.random() * 4); } while (ink === w); t.push({ word: w, ink, cong: false }); }
+    return shuffle(t);
+  }
+  const stSetButtons = on => stChoices.querySelectorAll('button').forEach(b => b.disabled = !on);
+  function stNext() {
+    $('#st-meter').textContent = `${stIdx} / 24`;
+    if (stIdx >= stTrials.length) return stFinish();
+    const fix = $('#st-fix'), word = $('#st-word');
+    fix.hidden = false; word.hidden = true; stLive = false; stSetButtons(false);
+    setTimeout(() => {
+      const tr = stTrials[stIdx];
+      word.textContent = COLORS[tr.word].name; word.style.color = COLORS[tr.ink].css;
+      fix.hidden = true; word.hidden = false; stSetButtons(true); stLive = true; stT0 = performance.now();
+    }, 450 + Math.random() * 300);
+  }
+  function stAnswer(i) {
+    if (!stLive) return;
+    stLive = false;
+    const tr = stTrials[stIdx];
+    tr.rt = performance.now() - stT0; tr.correct = i === tr.ink;
+    stIdx++; stNext();
+  }
+  document.addEventListener('keydown', e => {
+    if (current !== 'stroop') return;
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4) stAnswer(n - 1);
+  });
+  $('#st-start').addEventListener('click', () => {
+    stTrials = stBuild(); stIdx = 0;
+    $('#st-intro').hidden = true; $('#st-run').hidden = false; $('#st-results').hidden = true;
+    stNext();
+  });
+  function stFinish() {
+    stSetButtons(false);
+    $('#st-run').hidden = true; $('#st-intro').hidden = false;
+    $('#st-start').textContent = 'Làm lại một lần nữa';
+    const by = cong => stTrials.filter(t => t.cong === cong);
+    const rt = cong => mean(by(cong).filter(t => t.correct).map(t => t.rt));
+    const acc = cong => Math.round(100 * by(cong).filter(t => t.correct).length / 12);
+    const rc = rt(true), ri = rt(false), eff = ri - rc;
+    const max = Math.max(rc, ri, 1);
+    const verdict = eff > 40
+      ? `Bạn chậm hơn khoảng <b>${Math.round(eff)} ms</b> khi chữ và màu "cãi nhau". Đó chính là hiệu ứng Stroop: việc đọc chữ tự động đã chen ngang việc gọi tên màu.`
+      : `Chênh lệch của bạn khá nhỏ (${Math.round(eff)} ms). Bạn tập trung rất tốt, hoặc số lượt còn ít. Làm lại để xem kết quả có giữ nguyên không.`;
+    const summary = `Stroop | Khớp: ${Math.round(rc)} ms, đúng ${acc(true)}% | Không khớp: ${Math.round(ri)} ms, đúng ${acc(false)}% | Hiệu ứng: ${Math.round(eff)} ms`;
+    const box = $('#st-results');
+    box.innerHTML = `
+      <div class="stats">
+        <div class="stat"><div class="lbl">Màu khớp chữ</div><div class="val">${Math.round(rc)}<span class="unit">ms</span></div><div class="muted">Đúng ${acc(true)}%</div></div>
+        <div class="stat"><div class="lbl">Màu không khớp</div><div class="val">${Math.round(ri)}<span class="unit">ms</span></div><div class="muted">Đúng ${acc(false)}%</div></div>
+        <div class="stat"><div class="lbl">Hiệu ứng Stroop</div><div class="val">${eff >= 0 ? '+' : ''}${Math.round(eff)}<span class="unit">ms</span></div><div class="muted">Chậm thêm vì xung đột</div></div>
+      </div>
+      <div class="bars" aria-label="So sánh thời gian phản ứng trung bình">
+        <div class="bar-row"><span>Khớp</span><div class="bar-track"><div class="bar-fill" style="width:${100 * rc / max}%;background:var(--muted)"></div></div><span class="bar-val">${Math.round(rc)} ms</span></div>
+        <div class="bar-row"><span>Không khớp</span><div class="bar-track"><div class="bar-fill" style="width:${100 * ri / max}%;background:var(--tone)"></div></div><span class="bar-val">${Math.round(ri)} ms</span></div>
+      </div>
+      <p class="callout">${verdict}</p>
+      <div class="row"><button class="btn sm ghost" id="st-copy">Sao chép kết quả</button><span class="muted" id="st-copied"></span></div>
+      ${nextUp('stroop')}`;
+    box.hidden = false;
+    $('#st-copy').addEventListener('click', () => copyText(summary, $('#st-copied')));
+  }
+
+  /* ---------- Digit span ---------- */
+  let spLen = 3, spFails = 0, spSeq = '', spBest = 0, spHistory = [];
+  function spRound() {
+    $('#sp-meter').textContent = `Độ dài: ${spLen}`;
+    spSeq = Array.from({ length: spLen }, () => Math.floor(Math.random() * 10)).join('');
+    ['#sp-idle', '#sp-form', '#sp-feedback'].forEach(s => $(s).hidden = true); $('#sp-show').hidden = false;
+    const d = $('#sp-digit'); let k = 0; d.textContent = '';
+    const step = () => {
+      if (k >= spSeq.length) {
+        $('#sp-show').hidden = true; $('#sp-form').hidden = false;
+        const inp = $('#sp-input'); inp.value = ''; inp.focus();
+        return;
+      }
+      d.textContent = spSeq[k++];
+      setTimeout(() => { d.textContent = ''; setTimeout(step, 250); }, 850);
+    };
+    setTimeout(step, 500);
+  }
+  $('#sp-start').addEventListener('click', () => {
+    spLen = 3; spFails = 0; spBest = 0; spHistory = [];
+    $('#sp-trail').innerHTML = ''; $('#sp-results').hidden = true;
+    spRound();
+  });
+  $('#sp-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const ans = $('#sp-input').value.replace(/\D/g, '');
+    const ok = ans === spSeq;
+    spHistory.push({ len: spLen, ok });
+    const pip = document.createElement('span');
+    pip.className = 'pip ' + (ok ? 'ok' : 'no'); pip.textContent = `${spLen} số ${ok ? '✓' : '✗'}`;
+    $('#sp-trail').appendChild(pip);
+    $('#sp-form').hidden = true;
+    const fb = $('#sp-feedback'); fb.hidden = false;
+    if (ok) { spBest = Math.max(spBest, spLen); spLen++; spFails = 0; } else { spFails++; }
+    const done = spFails >= 2 || spLen > 14;
+    fb.innerHTML = `<p style="font:800 22px var(--f-display);margin:0 0 6px;color:${ok ? 'var(--good)' : 'var(--bad)'}">${ok ? 'Chính xác!' : 'Suýt nữa thôi'}</p>
+      <p class="muted" style="margin:0 0 16px">Dãy số: <span style="font-family:var(--f-mono)">${spSeq}</span>${ok ? '' : ` · Bạn gõ: <span style="font-family:var(--f-mono)">${ans || '(trống)'}</span>`}</p>
+      <button class="btn" id="sp-next">${done ? 'Xem kết quả' : (ok ? 'Tiếp tục, thêm 1 số' : 'Thử lại độ dài này')}</button>`;
+    $('#sp-next').addEventListener('click', () => done ? spFinish() : spRound());
+    $('#sp-next').focus();
+  });
+  function spFinish() {
+    $('#sp-feedback').hidden = true; $('#sp-idle').hidden = false;
+    $('#sp-start').textContent = 'Làm lại một lần nữa';
+    const where = spBest < 5 ? 'thấp hơn khoảng 7 ± 2 của Miller, nhưng vẫn nằm trong mức 4 ± 1 mà Cowan đề xuất'
+      : spBest <= 9 ? 'nằm gọn trong khoảng 7 ± 2 mà Miller mô tả'
+      : 'cao hơn khoảng 7 ± 2, có lẽ bạn đã gom số thành cụm';
+    const summary = `Tầm nhớ chữ số: ${spBest} | Số lượt: ${spHistory.length}`;
+    const box = $('#sp-results');
+    box.innerHTML = `
+      <div class="stats">
+        <div class="stat"><div class="lbl">Bạn nhớ được</div><div class="val">${spBest}<span class="unit">số</span></div></div>
+        <div class="stat"><div class="lbl">Khoảng của Miller</div><div class="val">5–9<span class="unit">số</span></div></div>
+        <div class="stat"><div class="lbl">Số lượt đã làm</div><div class="val">${spHistory.length}</div></div>
+      </div>
+      <p class="callout">Kết quả của bạn là <b>${spBest} chữ số</b>, ${where}. Lần sau thử gom 3 số thành một cụm khi nhớ, rồi so xem có tăng không.</p>
+      <div class="row"><button class="btn sm ghost" id="sp-copy">Sao chép kết quả</button><span class="muted" id="sp-copied"></span></div>
+      ${nextUp('span')}`;
+    box.hidden = false;
+    $('#sp-copy').addEventListener('click', () => copyText(summary, $('#sp-copied')));
+  }
+
+  /* ---------- Quiz ---------- */
+  const QUIZ = [
+    { q: 'Thí nghiệm Stroop (1935) cho thấy điều gì?', o: ['Con người nhận diện màu sắc nhanh hơn chữ viết', 'Đọc chữ là quá trình gần như tự động, khó ức chế khi xung đột với việc gọi tên màu', 'Trí nhớ ngắn hạn chỉ giữ được 7 đơn vị', 'Màu đỏ gây chú ý mạnh nhất'], a: 1, e: 'Người trưởng thành đọc chữ gần như tự động. Khi nghĩa của chữ mâu thuẫn với màu mực, cần thêm thời gian để ức chế phản ứng đọc.' },
+    { q: 'Theo Miller (1956), trí nhớ ngắn hạn giữ được khoảng bao nhiêu đơn vị thông tin?', o: ['3 ± 1', '7 ± 2', '12 ± 3', 'Không giới hạn'], a: 1, e: 'Miller gọi đây là "con số kỳ diệu 7 ± 2". Các nghiên cứu sau như Cowan (2001) cho rằng giới hạn thực gần 4 cụm hơn.' },
+    { q: 'Theo Piaget, trẻ bắt đầu hiểu khái niệm bảo tồn (lượng nước không đổi khi rót sang cốc khác) ở giai đoạn nào?', o: ['Cảm giác – vận động', 'Tiền thao tác', 'Thao tác cụ thể', 'Thao tác hình thức'], a: 2, e: 'Giai đoạn thao tác cụ thể (khoảng 7–11 tuổi) là khi trẻ nắm được bảo tồn và suy luận logic về sự vật cụ thể.' },
+    { q: 'Vygotsky gọi khoảng cách giữa điều trẻ tự làm được và điều trẻ làm được khi có người hỗ trợ là gì?', o: ['Vùng phát triển gần', 'Giai đoạn tiền thao tác', 'Cơ chế đồng hóa', 'Học tập quan sát'], a: 0, e: 'Vùng phát triển gần (ZPD) là nơi việc dạy học hiệu quả nhất, với sự hỗ trợ ("giàn giáo") từ người lớn hoặc bạn giỏi hơn.' },
+    { q: 'Theo Erikson, thách thức tâm lý – xã hội chính của tuổi vị thành niên là gì?', o: ['Tin tưởng – Ngờ vực', 'Siêng năng – Tự ti', 'Bản sắc – Mơ hồ vai trò', 'Gần gũi – Cô lập'], a: 2, e: 'Ở tuổi vị thành niên, cá nhân tìm câu trả lời cho câu hỏi "Mình là ai?" để hình thành bản sắc cá nhân.' },
+    { q: 'Trong mô hình nhân cách của Freud, thành phần nào hoạt động theo "nguyên tắc khoái lạc"?', o: ['Cái Tôi (Ego)', 'Cái Siêu tôi (Superego)', 'Cái Ấy (Id)', 'Vô thức tập thể'], a: 2, e: 'Cái Ấy chứa các bản năng và đòi thỏa mãn ngay. Cái Tôi theo nguyên tắc hiện thực, còn Cái Siêu tôi đại diện cho chuẩn mực đạo đức.' },
+    { q: 'Trong thí nghiệm của Pavlov, sau khi luyện tập, tiếng chuông trở thành gì?', o: ['Kích thích không điều kiện', 'Kích thích có điều kiện', 'Phản ứng không điều kiện', 'Củng cố âm tính'], a: 1, e: 'Ban đầu tiếng chuông là kích thích trung tính. Sau khi đi kèm thức ăn nhiều lần, nó trở thành kích thích có điều kiện, gây tiết nước bọt.' },
+    { q: 'Theo Skinner, "củng cố âm tính" là gì?', o: ['Trừng phạt để giảm hành vi', 'Loại bỏ một kích thích khó chịu để tăng hành vi', 'Thưởng để tăng hành vi', 'Phớt lờ hành vi để nó tự mất'], a: 1, e: 'Đây là lỗi hiểu nhầm phổ biến. Củng cố âm tính làm TĂNG hành vi bằng cách gỡ bỏ điều khó chịu, ví dụ thắt dây an toàn để tắt tiếng chuông báo.' },
+    { q: 'Tầng thấp nhất trong tháp nhu cầu của Maslow là gì?', o: ['Nhu cầu an toàn', 'Nhu cầu sinh lý', 'Nhu cầu được tôn trọng', 'Nhu cầu tự thể hiện'], a: 1, e: 'Nhu cầu sinh lý như ăn, uống, ngủ là nền tảng. Theo Maslow, các nhu cầu cao hơn thường nổi lên khi nhu cầu cơ bản được đáp ứng.' },
+    { q: 'Trong nghiên cứu kinh điển, Paul Ekman đề xuất bao nhiêu cảm xúc cơ bản có biểu hiện nét mặt phổ quát?', o: ['3', '6', '10', '27'], a: 1, e: 'Vui, buồn, giận, sợ, ngạc nhiên và ghê tởm. Đây là nền tảng cho mô hình nhận diện cảm xúc ở Chương 2, dù quan điểm này hiện vẫn bị tranh luận.' },
+  ];
+  let qi = 0, score = 0;
+  function qRender() {
+    const body = $('#qz-body');
+    $('#qz-bar').style.width = `${100 * qi / QUIZ.length}%`;
+    if (qi >= QUIZ.length) {
+      $('#qz-meter').textContent = `${QUIZ.length} / ${QUIZ.length}`;
+      const pct = Math.round(100 * score / QUIZ.length);
+      const msg = pct >= 80 ? 'Xuất sắc! Bạn nắm rất chắc các học thuyết nền tảng.' : pct >= 50 ? 'Khá tốt! Đọc lại phần giải thích của những câu sai để chắc hơn.' : 'Không sao cả. Đây là dịp tốt để ôn lại, hãy làm thêm một lượt nữa.';
+      body.innerHTML = `
+        <div class="stats">
+          <div class="stat"><div class="lbl">Số câu đúng</div><div class="val">${score}<span class="unit">/ ${QUIZ.length}</span></div></div>
+          <div class="stat"><div class="lbl">Tỷ lệ</div><div class="val">${pct}<span class="unit">%</span></div></div>
+          <div class="stat"><div class="lbl">Mức độ</div><div class="val" style="font-size:20px;font-family:var(--f-display)">${pct >= 80 ? 'Vững' : pct >= 50 ? 'Khá' : 'Cần ôn thêm'}</div></div>
+        </div>
+        <p class="callout">${msg}</p>
+        <div class="row"><button class="btn sm" id="qz-again">Làm lại</button><button class="btn sm ghost" id="qz-copy">Sao chép kết quả</button><span class="muted" id="qz-copied"></span></div>
+        ${nextUp('quiz')}`;
+      $('#qz-again').addEventListener('click', () => { qi = 0; score = 0; qRender(); });
+      $('#qz-copy').addEventListener('click', () => copyText(`Quiz học thuyết: ${score}/${QUIZ.length}`, $('#qz-copied')));
+      return;
+    }
+    const item = QUIZ[qi];
+    $('#qz-meter').textContent = `${qi + 1} / ${QUIZ.length}`;
+    body.innerHTML = `<p class="q-text">${item.q}</p><div class="opts" id="qz-opts"></div><div id="qz-exp"></div>`;
+    const opts = $('#qz-opts');
+    item.o.forEach((txt, i) => {
+      const b = document.createElement('button');
+      b.className = 'opt'; b.textContent = txt;
+      b.addEventListener('click', () => {
+        opts.querySelectorAll('button').forEach((x, j) => { x.disabled = true; if (j === item.a) x.classList.add('right'); });
+        if (i === item.a) score++; else b.classList.add('wrong');
+        $('#qz-exp').innerHTML = `<p class="callout"><b>${i === item.a ? 'Đúng rồi!' : 'Chưa đúng.'}</b> ${item.e}</p>
+          <div class="row" style="margin-top:12px"><button class="btn sm" id="qz-next">${qi + 1 < QUIZ.length ? 'Câu tiếp theo' : 'Xem kết quả'}</button></div>`;
+        $('#qz-next').addEventListener('click', () => { qi++; qRender(); });
+        $('#qz-next').focus();
+      });
+      opts.appendChild(b);
+    });
+  }
+  qRender();
+
+  /* ---------- Copy helper ---------- */
+  function copyText(text, statusEl) {
+    const done = msg => { statusEl.textContent = msg; setTimeout(() => statusEl.textContent = '', 2500); };
+    try { navigator.clipboard.writeText(text).then(() => done('Đã sao chép'), () => done(text)); }
+    catch (e) { done(text); }
+  }
+})();
+</script>
+
+</body>
+</html>

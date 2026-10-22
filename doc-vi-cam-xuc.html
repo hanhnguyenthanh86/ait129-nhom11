@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Đọc vị Cảm xúc</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: thanh điều hướng 4 mục (Luyện tập · Tiến bộ · Cả lớp · Khoa học); màn luyện tập đặt khuôn mặt lớn ở giữa, 5 nút cảm xúc bên dưới, phản hồi người – AI hiện ngay sau khi chọn */
+:root{
+  --bg:#f3f6f6; --surface:#ffffff; --surface-2:#eaf1f1; --line:#d6e2e2;
+  --fg:#152829; --muted:#5d7374; --accent:#0e7c86; --accent-ink:#ffffff; --accent-soft:#d9eff1;
+  --rose:#d94f70; --rose-soft:#fbe4ea; --amber:#c98a00;
+  --good:#1f8a52; --bad:#cf3b3b;
+  --e-vui:#e8a317; --e-buon:#4a7fd4; --e-gian:#d9463b; --e-ngac:#8e52d6; --e-trung:#6f8384;
+  --f-display:"Nunito","Be Vietnam Pro",system-ui,sans-serif;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 2px rgba(20,50,52,.06),0 10px 28px rgba(20,50,52,.08);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1819; --surface:#152325; --surface-2:#1b2d30; --line:#2a4245;
+  --fg:#e5f0f0; --muted:#97b0b1; --accent:#4cc5cf; --accent-ink:#06262a; --accent-soft:#163a3e;
+  --rose:#ff7d98; --rose-soft:#3b1f27; --amber:#ffc23d;
+  --good:#5fd38f; --bad:#ff7d73;
+  --e-vui:#ffc23d; --e-buon:#7aa8ff; --e-gian:#ff7065; --e-ngac:#b98cff; --e-trung:#9fb3b4;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1819; --surface:#152325; --surface-2:#1b2d30; --line:#2a4245;
+  --fg:#e5f0f0; --muted:#97b0b1; --accent:#4cc5cf; --accent-ink:#06262a; --accent-soft:#163a3e;
+  --rose:#ff7d98; --rose-soft:#3b1f27; --amber:#ffc23d;
+  --good:#5fd38f; --bad:#ff7d73;
+  --e-vui:#ffc23d; --e-buon:#7aa8ff; --e-gian:#ff7065; --e-ngac:#b98cff; --e-trung:#9fb3b4;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.25); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:1060px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{text-wrap:balance}
+.muted{color:var(--muted)}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:12px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);flex:none}
+.brand b{font:900 20px var(--f-display);display:block;line-height:1.1}
+.brand span{font-size:12px;color:var(--muted)}
+.nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;flex-wrap:wrap}
+.nav button{font:600 14px var(--f-body);border:0;background:transparent;color:var(--muted);padding:8px 14px;border-radius:10px;cursor:pointer}
+.nav button[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+
+.sim{display:flex;gap:10px;align-items:flex-start;background:var(--rose-soft);border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:16px}
+.sim b{color:var(--rose)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;align-items:center;margin-bottom:22px}
+@media (max-width:820px){.hero{grid-template-columns:1fr}}
+.hero h1{font:900 clamp(30px,5.5vw,48px)/1.1 var(--f-display);margin:0 0 10px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{font-size:16px;color:var(--muted);margin:0 0 18px;max-width:50ch}
+.faces-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.faces-row .mini{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:8px;box-shadow:var(--shadow)}
+.faces-row .mini svg{display:block;width:100%;height:auto}
+
+.btn{font:700 16px var(--f-body);padding:13px 22px;border-radius:14px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.sm{font-size:14px;padding:9px 16px;border-radius:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}
+@media (max-width:720px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font:800 26px var(--f-mono);font-variant-numeric:tabular-nums;line-height:1.3}
+.tile .unit{font:500 13px var(--f-body);color:var(--muted);margin-left:3px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);min-width:0}
+.card h2{font:800 20px var(--f-display);margin:0 0 4px}
+.card .sub{color:var(--muted);margin:0 0 16px;font-size:14px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+
+/* practice */
+.practice{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.practice{grid-template-columns:1fr}}
+.face-stage{background:var(--surface-2);border-radius:20px;padding:14px;display:grid;place-items:center;position:relative}
+.face-stage svg{width:100%;max-width:340px;height:auto;display:block}
+.face-id{position:absolute;top:12px;left:14px;font:600 12px var(--f-mono);color:var(--muted)}
+.intensity{position:absolute;top:12px;right:14px;font:600 11px var(--f-body);color:var(--muted);background:var(--surface);border-radius:999px;padding:2px 8px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.pill{font:600 13px var(--f-mono);color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums}
+.ask{font:800 20px var(--f-display);margin:0 0 12px}
+.emos{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.emos{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.emo{font:700 14px var(--f-body);padding:12px 6px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.emo i{width:12px;height:12px;border-radius:50%;background:var(--c)}
+.emo small{font:500 11px var(--f-mono);color:var(--muted)}
+.emo:hover:not(:disabled){border-color:var(--c)}
+.emo:disabled{cursor:default;opacity:.55}
+.emo.right{opacity:1;border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--surface))}
+.emo.wrong{opacity:1;border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--surface))}
+.fb{margin-top:16px;display:grid;gap:12px}
+.verdict{font:800 18px var(--f-display);margin:0}
+.verdict.ok{color:var(--good)} .verdict.no{color:var(--bad)}
+.cue{background:var(--accent-soft);border-radius:14px;padding:12px 14px;font-size:14px;margin:0}
+.ai-box{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.ai-box h4{margin:0 0 8px;font:800 15px var(--f-display);display:flex;justify-content:space-between;gap:8px}
+.prob{display:grid;grid-template-columns:86px minmax(0,1fr) 44px;gap:8px;align-items:center;font-size:13px;margin-bottom:4px}
+.prob .track{height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+.prob .fill{height:100%;border-radius:5px;background:var(--c)}
+.prob .pct{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.prob.top span:first-child{font-weight:700}
+
+/* charts */
+.bars{display:grid;gap:10px}
+.bar-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;align-items:center;font-size:13px}
+.pair{display:grid;gap:4px}
+.pair .b{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px;align-items:center}
+.pair .track{height:12px;background:var(--surface-2);border-radius:6px;overflow:hidden}
+.pair .fill{height:100%;border-radius:6px}
+.pair .pct{font-family:var(--f-mono);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.hist{display:flex;align-items:flex-end;gap:6px;height:150px;padding-top:6px;border-bottom:1px solid var(--line)}
+.hist .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:0;height:100%}
+.hist .bar{width:100%;max-width:34px;border-radius:6px 6px 0 0;background:var(--accent)}
+.hist .v{font:600 11px var(--f-mono);color:var(--muted)}
+.hist-x{display:flex;gap:6px;margin-top:4px}
+.hist-x span{flex:1;text-align:center;font-size:11px;color:var(--muted);min-width:0}
+.matrix-wrap{overflow-x:auto}
+table.matrix{border-collapse:separate;border-spacing:3px;font-size:12px;min-width:420px}
+.matrix th{font-weight:600;color:var(--muted);padding:4px 6px;text-align:center}
+.matrix th.r{text-align:right}
+.matrix td{width:56px;height:38px;text-align:center;border-radius:8px;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.matrix td.diag{outline:2px solid var(--good);outline-offset:-2px}
+.empty{text-align:center;padding:28px 12px;color:var(--muted)}
+.empty b{display:block;font:800 18px var(--f-display);color:var(--fg);margin-bottom:4px}
+
+.sci table{width:100%;border-collapse:collapse;font-size:14px}
+.sci th,.sci td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.sci th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sci .tbl{overflow-x:auto}
+.sci h3{font:800 17px var(--f-display);margin:18px 0 6px}
+.sci p,.sci li{font-size:14px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+.tag i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+
+.note{font-size:12px;color:var(--muted)}
+footer{margin-top:32px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2"/><path d="M9 9.5h.01M15 9.5h.01"/></svg></span>
+      <div><b>Đọc vị Cảm xúc</b><span>Luyện nhận diện cảm xúc qua nét mặt</span></div>
+    </div>
+    <nav class="nav" aria-label="Mục chính">
+      <button data-view="home" aria-current="page">Trang đầu</button>
+      <button data-view="practice">Luyện tập</button>
+      <button data-view="me">Tiến bộ của tôi</button>
+      <button data-view="class">Cả lớp</button>
+      <button data-view="sci">Khoa học</button>
+    </nav>
+  </div>
+
+  <div class="sim" role="note">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex:none;color:var(--rose);margin-top:1px"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>
+    <span><b>Dữ liệu không có người thật.</b> Khuôn mặt lấy từ bộ dữ liệu minh họa của nhóm, vẽ theo mô tả cơ mặt của Ekman: mã T01–T25 là bộ kiểm thử, H01–H50 lấy từ bộ huấn luyện. Phần "AI đoán" là kết quả thật của mô hình Teachable Machine nhóm đã huấn luyện (mô hình A, học 500 ảnh minh họa): <a href="https://teachablemachine.withgoogle.com/models/qRarH3ZZA/" target="_blank" rel="noopener">xem mô hình</a>.</span>
+  </div>
+
+  <!-- HOME -->
+  <main id="v-home">
+    <section class="hero">
+      <div>
+        <h1>Bạn đọc cảm xúc <em>giỏi hơn AI</em> không?</h1>
+        <p>Mỗi lượt luyện gồm 10 khuôn mặt. Bạn đoán cảm xúc, rồi xem AI đoán gì và vì sao. Kết quả của bạn được lưu lại để theo dõi tiến bộ, và góp vào bảng so sánh người với AI của cả lớp.</p>
+        <div class="row"><button class="btn" data-go="practice">Bắt đầu lượt luyện 10 ảnh</button><span class="note">Khoảng 3 phút · bấm phím 1–5 trên máy tính</span></div>
+      </div>
+      <div class="faces-row" id="hero-faces" aria-hidden="true"></div>
+    </section>
+    <div class="tiles" id="home-tiles"></div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Vì sao cần luyện?</h2>
+        <p class="sub">Quan sát giao tiếp phi ngôn ngữ là kỹ năng nền tảng của người làm tham vấn.</p>
+        <p style="margin:0 0 8px;font-size:14px">Nét mặt cho biết nhiều điều mà lời nói không nói ra. Ứng dụng giúp bạn luyện nhìn đúng những cơ mặt quan trọng: lông mày, mắt, miệng, và so cách bạn đọc với cách một mô hình AI đọc.</p>
+        <p style="margin:0;font-size:14px" class="muted">Mục "Khoa học" giải thích các dấu hiệu nét mặt và giới hạn của việc đọc cảm xúc chỉ qua khuôn mặt.</p>
+      </div>
+      <div class="card">
+        <h2>Cách hoạt động</h2>
+        <ol style="margin:0;padding-left:20px;font-size:14px;display:grid;gap:6px">
+          <li><b>Đoán</b> cảm xúc trên khuôn mặt: vui, buồn, giận, ngạc nhiên hay trung tính.</li>
+          <li><b>So với AI</b>: xem mô hình đoán gì, chắc chắn bao nhiêu phần trăm.</li>
+          <li><b>Học dấu hiệu</b>: đọc mô tả cơ mặt giúp nhận ra cảm xúc đó.</li>
+          <li><b>Theo dõi</b> tiến bộ của bạn và kết quả chung của cả lớp.</li>
+        </ol>
+      </div>
+    </div>
+  </main>
+
+  <!-- PRACTICE -->
+  <main id="v-practice" hidden>
+    <div class="card">
+      <div id="pr-intro">
+        <h2>Lượt luyện mới</h2>
+        <p class="sub">10 khuôn mặt chọn ngẫu nhiên, gồm cả biểu cảm rõ và biểu cảm nhẹ (khó hơn).</p>
+        <button class="btn" id="pr-start">Bắt đầu</button>
+      </div>
+      <div id="pr-run" class="practice" hidden>
+        <div class="face-stage"><span class="face-id" id="pr-id"></span><span class="intensity" id="pr-int"></span><div id="pr-face"></div></div>
+        <div>
+          <div class="qhead"><span class="ask">Đây là cảm xúc gì?</span><span class="pill" id="pr-count">1 / 10</span></div>
+          <div class="emos" id="pr-emos"></div>
+          <div class="fb" id="pr-fb" hidden></div>
+        </div>
+      </div>
+      <div id="pr-done" hidden></div>
+    </div>
+  </main>
+
+  <!-- ME -->
+  <main id="v-me" hidden>
+    <div class="tiles" id="me-tiles"></div>
+    <div class="grid2">
+      <div class="card"><h2>Các lượt gần đây</h2><p class="sub">Tỷ lệ đúng của bạn qua từng lượt luyện.</p><div id="me-hist"></div></div>
+      <div class="card"><h2>Theo từng cảm xúc</h2><p class="sub">So với AI trên cùng những khuôn mặt bạn đã xem.</p><div id="me-emo"></div></div>
+    </div>
+    <div class="card" style="margin-top:18px"><h2>Bạn hay nhầm cảm xúc nào?</h2><p class="sub">Hàng là cảm xúc thật, cột là cảm xúc bạn chọn. Ô viền xanh là chọn đúng.</p><div id="me-matrix"></div></div>
+  </main>
+
+  <!-- CLASS -->
+  <main id="v-class" hidden>
+    <div class="tiles" id="cl-tiles"></div>
+    <div class="grid2">
+      <div class="card"><h2>Người và AI theo từng cảm xúc</h2><p class="sub">Gộp tất cả câu trả lời của lớp trên cùng các khuôn mặt.</p><div id="cl-emo"></div></div>
+      <div class="card"><h2>Kiểu nhầm lẫn của lớp</h2><p class="sub">Phần trăm theo hàng: mỗi hàng là 100% số lần gặp cảm xúc đó.</p><div id="cl-matrix-h"></div></div>
+    </div>
+    <div class="card" style="margin-top:18px"><h2>Kiểu nhầm lẫn của AI</h2><p class="sub">Trên cùng những khuôn mặt lớp đã trả lời. So sánh với bảng của lớp để thấy người và AI nhầm khác nhau thế nào.</p><div id="cl-matrix-a"></div></div>
+    <p class="note" id="cl-note" style="margin-top:12px"></p>
+  </main>
+
+  <!-- SCIENCE -->
+  <main id="v-sci" hidden>
+    <div class="card sci">
+      <h2>Khoa học đằng sau</h2>
+      <p class="sub">Dấu hiệu nét mặt của 5 cảm xúc, dựa trên mô tả của Paul Ekman và hệ thống mã hóa cử động mặt (FACS).</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Cảm xúc</th><th>Lông mày</th><th>Mắt</th><th>Miệng và má</th></tr></thead>
+        <tbody id="sci-rows"></tbody>
+      </table></div>
+      <h3>Giới hạn cần nhớ</h3>
+      <ul>
+        <li><b>Nét mặt không phải lúc nào cũng phản ánh cảm xúc bên trong.</b> Barrett và cộng sự (2019) tổng quan hơn 1.000 nghiên cứu và cho rằng con người không thể hiện cảm xúc qua nét mặt một cách nhất quán; bối cảnh và văn hóa ảnh hưởng rất lớn.</li>
+        <li><b>AI học từ dữ liệu nhỏ dễ thiên lệch.</b> Mô hình chỉ học từ khuôn mặt của vài người sẽ kém chính xác với người khác về tuổi, màu da, giới tính.</li>
+        <li><b>Không dùng để đánh giá người thật.</b> Đạo luật AI của Liên minh châu Âu cấm dùng AI nhận diện cảm xúc ở nơi làm việc và trường học, trừ lý do y tế hoặc an toàn.</li>
+      </ul>
+      <h3>Về dữ liệu của bạn</h3>
+      <p>Ứng dụng chỉ lưu số câu đúng và các lựa chọn của bạn, gắn với một mã ẩn danh, không lưu tên. Bảng "Cả lớp" chỉ hiện số liệu gộp.</p>
+      <h3>Tài liệu tham khảo</h3>
+      <ul class="muted">
+        <li>Ekman, P., &amp; Friesen, W. V. (1971). Constants across cultures in the face and emotion. Journal of Personality and Social Psychology, 17(2), 124–129.</li>
+        <li>Barrett, L. F., Adolphs, R., Marsella, S., Martinez, A. M., &amp; Pollak, S. D. (2019). Emotional expressions reconsidered. Psychological Science in the Public Interest, 20(1), 1–68.</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <span>Dự án tổng hợp AIT129 · Chương 2 · Google Teachable Machine</span>
+    <span id="save-status">Đang kết nối nơi lưu kết quả…</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const EMO = [
+    { key: 'vui', name: 'Vui', c: 'var(--e-vui)' },
+    { key: 'buon', name: 'Buồn', c: 'var(--e-buon)' },
+    { key: 'gian', name: 'Giận', c: 'var(--e-gian)' },
+    { key: 'ngac', name: 'Ngạc nhiên', c: 'var(--e-ngac)' },
+    { key: 'trung', name: 'Trung tính', c: 'var(--e-trung)' },
+  ];
+  const CUES = [
+    { brow: 'Hơi nâng, thả lỏng', eye: 'Nheo lại, có nếp nhăn ở đuôi mắt', mouth: 'Khóe miệng kéo lên, má nâng cao', tip: 'Nụ cười thật (nụ cười Duchenne) làm cả má và đuôi mắt cùng chuyển động, không chỉ riêng miệng.' },
+    { brow: 'Phần trong nhướng lên, tạo hình chữ "∧"', eye: 'Mí trên hơi sụp xuống', mouth: 'Khóe miệng trễ xuống', tip: 'Dấu hiệu khó giả nhất là phần trong của lông mày nhướng lên, kéo da trán ở giữa.' },
+    { brow: 'Hạ thấp và chau lại, có nếp nhăn giữa hai mày', eye: 'Nheo, ánh nhìn gắt', mouth: 'Môi mím chặt hoặc mím mỏng', tip: 'Giận dễ bị nhầm với buồn khi biểu cảm nhẹ. Hãy nhìn hướng lông mày: giận thì đầu trong hạ xuống, buồn thì đầu trong nhướng lên.' },
+    { brow: 'Nhướng cao và cong đều', eye: 'Mở to, thấy rõ lòng trắng phía trên', mouth: 'Há tròn, hàm dưới thả xuống', tip: 'Ngạc nhiên thường rất ngắn, chỉ kéo dài khoảng một giây trên khuôn mặt thật.' },
+    { brow: 'Thả lỏng, nằm ngang', eye: 'Mở bình thường', mouth: 'Khép, khóe miệng nằm ngang', tip: 'Trung tính khó vì không có dấu hiệu nào nổi bật. Người quan sát thường "đọc thêm" buồn hoặc giận vào khuôn mặt trung tính.' },
+  ];
+
+  /* ---------- seeded random ---------- */
+  function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  /* ---------- face generator ---------- */
+  const SKIN = ['#f3d5bb', '#e7b994', '#cf9a6c', '#a86f47', '#7b4f33', '#f7e3d0'];
+  const HAIR = ['#2a1c15', '#4b2f1f', '#161616', '#7b4a2a', '#a7773f', '#3b3b3b'];
+  const P = { // [browInner, browOuter, eyeOpen, mouthW, mouthCurve, mouthOpen, cheeks]
+    trung: [0, 0, 1, 17, 0, 0, 0],
+    vui: [2, 1, .55, 26, 9, 7, 1],
+    buon: [-11, 3, .8, 18, -7, 0, 0],
+    gian: [9, -5, .7, 15, -2, 0, 0],
+    ngac: [-15, -13, 1.6, 10, 0, 18, 0],
+  };
+  function faceSVG(item, size) {
+    const r = rng(item.seed);
+    const skin = SKIN[item.skin], hair = HAIR[item.hair];
+    const base = P.trung, tgt = P[item.emo], k = item.k;
+    const v = base.map((b, i) => b + (tgt[i] - b) * k);
+    const jit = () => (r() - .5) * 2;
+    const [bi, bo, eo, mw, mc, mo, ch] = v;
+    const fx = 100, fy = 118, rx = 58 + item.shape * 3, ry = 74;
+    const ex = 24 + item.shape, ey = 108, by = 88;
+    const browIn = by + bi + jit() * .6, browOut = by + bo + jit() * .6;
+    const eyeRy = 6.5 * eo;
+    const mY = 160, cornerY = mY - mc;
+    let hairBack = '', hairFront = '';
+    if (item.style === 0) hairFront = `<path d="M${fx - rx - 2} ${fy - 18} Q${fx - rx} ${fy - ry - 22} ${fx} ${fy - ry - 14} Q${fx + rx} ${fy - ry - 22} ${fx + rx + 2} ${fy - 18} Q${fx + rx - 6} ${fy - ry + 12} ${fx + 10} ${fy - ry + 6} Q${fx - 30} ${fy - ry + 2} ${fx - rx + 4} ${fy - 14} Z" fill="${hair}"/>`;
+    if (item.style === 1) hairFront = `<path d="M${fx - rx - 3} ${fy - 6} Q${fx - rx - 8} ${fy - ry - 18} ${fx - 6} ${fy - ry - 16} Q${fx + rx + 10} ${fy - ry - 12} ${fx + rx + 3} ${fy - 4} Q${fx + rx - 10} ${fy - ry + 8} ${fx - 18} ${fy - ry + 18} Q${fx - rx + 8} ${fy - ry + 30} ${fx - rx + 2} ${fy - 2} Z" fill="${hair}"/>`;
+    if (item.style === 2) { hairBack = `<path d="M${fx - rx - 8} ${fy - 10} Q${fx - rx - 14} ${fy + 80} ${fx - rx + 6} ${fy + 92} L${fx + rx - 6} ${fy + 92} Q${fx + rx + 14} ${fy + 80} ${fx + rx + 8} ${fy - 10} Z" fill="${hair}"/>`; hairFront = `<path d="M${fx - rx - 6} ${fy + 4} Q${fx - rx - 6} ${fy - ry - 20} ${fx} ${fy - ry - 16} Q${fx + rx + 6} ${fy - ry - 20} ${fx + rx + 6} ${fy + 4} Q${fx + rx - 4} ${fy - ry + 18} ${fx} ${fy - ry + 22} Q${fx - rx + 4} ${fy - ry + 18} ${fx - rx - 6} ${fy + 4} Z" fill="${hair}"/>`; }
+    if (item.style === 3) { hairBack = `<circle cx="${fx}" cy="${fy - ry - 18}" r="20" fill="${hair}"/>`; hairFront = `<path d="M${fx - rx - 2} ${fy - 14} Q${fx - rx} ${fy - ry - 16} ${fx} ${fy - ry - 10} Q${fx + rx} ${fy - ry - 16} ${fx + rx + 2} ${fy - 14} Q${fx + 20} ${fy - ry + 4} ${fx - rx + 2} ${fy - 14} Z" fill="${hair}"/>`; }
+    const eye = (cx, side) => {
+      const lid = side * 0;
+      return `<ellipse cx="${cx}" cy="${ey}" rx="11" ry="${Math.max(eyeRy, 1.4).toFixed(2)}" fill="#fff" stroke="#3a2a22" stroke-width="1.6"/>
+        <clipPath id="c${item.id}${side}"><ellipse cx="${cx}" cy="${ey}" rx="11" ry="${Math.max(eyeRy, 1.4).toFixed(2)}"/></clipPath>
+        <circle cx="${cx}" cy="${ey + .5}" r="5" fill="#2b1d16" clip-path="url(#c${item.id}${side})"/>
+        <circle cx="${cx + 1.6}" cy="${ey - 1.4}" r="1.3" fill="#fff" clip-path="url(#c${item.id}${side})"/>`;
+    };
+    const brow = (side) => {
+      const xi = fx + side * 9, xo = fx + side * (ex + 15);
+      const midY = (browIn + browOut) / 2 - (item.emo === 'ngac' ? 4 * k : 1);
+      return `<path d="M${xi} ${browIn.toFixed(1)} Q${(xi + xo) / 2} ${midY.toFixed(1)} ${xo} ${browOut.toFixed(1)}" stroke="${hair}" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+    };
+    let mouth;
+    const x1 = fx - mw, x2 = fx + mw;
+    if (mo > 3 && item.emo === 'ngac') {
+      mouth = `<ellipse cx="${fx}" cy="${mY + 2}" rx="${(mw * .9).toFixed(1)}" ry="${(mo * .6).toFixed(1)}" fill="#5a2424" stroke="#3a2020" stroke-width="1.5"/>`;
+    } else if (mo > 2) {
+      const lowY = mY + mc + mo;
+      mouth = `<path d="M${x1} ${cornerY} Q${fx} ${(mY + mc * .4).toFixed(1)} ${x2} ${cornerY} Q${fx} ${(lowY + mc).toFixed(1)} ${x1} ${cornerY} Z" fill="#5a2424" stroke="#3a2020" stroke-width="1.5"/>
+        <path d="M${x1 + 5} ${cornerY + 1.5} Q${fx} ${(mY + mc * .4 + 3).toFixed(1)} ${x2 - 5} ${cornerY + 1.5}" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+    } else {
+      const sw = item.emo === 'gian' ? 3.6 : 2.6;
+      mouth = `<path d="M${x1} ${cornerY.toFixed(1)} Q${fx} ${(mY + mc).toFixed(1)} ${x2} ${cornerY.toFixed(1)}" stroke="#7a3434" stroke-width="${sw}" fill="none" stroke-linecap="round"/>`;
+    }
+    const extras = [];
+    if (ch > .4) {
+      extras.push(`<ellipse cx="${fx - ex - 6}" cy="${ey + 22}" rx="10" ry="6" fill="#e7837a" opacity="${(.35 * ch).toFixed(2)}"/><ellipse cx="${fx + ex + 6}" cy="${ey + 22}" rx="10" ry="6" fill="#e7837a" opacity="${(.35 * ch).toFixed(2)}"/>`);
+      extras.push(`<path d="M${fx - ex - 15} ${ey - 2} l-5 -3 M${fx - ex - 15} ${ey + 3} l-5 2 M${fx + ex + 15} ${ey - 2} l5 -3 M${fx + ex + 15} ${ey + 3} l5 2" stroke="#8a5a45" stroke-width="1.3" stroke-linecap="round" opacity="${(.8 * ch).toFixed(2)}"/>`);
+    }
+    if (item.emo === 'gian' && k > .55) extras.push(`<path d="M${fx - 3} ${browIn - 6} l1 8 M${fx + 3} ${browIn - 6} l-1 8" stroke="#8a5a45" stroke-width="1.3" stroke-linecap="round" opacity="${(k * .9).toFixed(2)}"/>`);
+    if (item.emo === 'buon' && k > .55) extras.push(`<path d="M${fx - 8} ${browIn - 9} q8 -4 16 0" stroke="#8a5a45" stroke-width="1.2" fill="none" opacity="${(k * .8).toFixed(2)}"/>`);
+    if (item.emo === 'ngac' && k > .55) extras.push(`<path d="M${fx - 18} ${by - 26} q18 -5 36 0 M${fx - 14} ${by - 20} q14 -4 28 0" stroke="#8a5a45" stroke-width="1.2" fill="none" opacity="${(k * .7).toFixed(2)}"/>`);
+    return `<svg viewBox="0 0 200 230" width="${size || 200}" role="img" aria-label="Khuôn mặt minh họa">
+      <circle cx="100" cy="118" r="98" style="fill:color-mix(in srgb, ${skin} 22%, var(--surface))"/>
+      ${hairBack}
+      <ellipse cx="${fx - rx + 2}" cy="${ey + 6}" rx="8" ry="13" fill="${skin}"/><ellipse cx="${fx + rx - 2}" cy="${ey + 6}" rx="8" ry="13" fill="${skin}"/>
+      <rect x="${fx - 18}" y="${fy + ry - 18}" width="36" height="34" fill="${skin}"/>
+      <path d="M${fx - 46} 230 Q${fx} ${fy + ry - 6} ${fx + 46} 230 Z" style="fill:color-mix(in srgb, ${hair} 30%, var(--accent))"/>
+      <ellipse cx="${fx}" cy="${fy}" rx="${rx}" ry="${ry}" fill="${skin}"/>
+      ${hairFront}
+      ${eye(fx - ex, -1)}${eye(fx + ex, 1)}
+      ${brow(-1)}${brow(1)}
+      <path d="M${fx - 2} ${ey + 8} Q${fx - 7} ${ey + 28} ${fx - 1} ${ey + 31} Q${fx + 4} ${ey + 32} ${fx + 7} ${ey + 30}" style="stroke:color-mix(in srgb, ${skin} 55%, #5a3a2a)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      ${extras.join('')}
+      ${mouth}
+    </svg>`;
+  }
+
+  /* ---------- faces from the group's illustrated dataset (same generator and seeds as Bo_du_lieu_khuon_mat_minh_hoa) ---------- */
+  const KEYS = ['vui', 'buon', 'gian', 'ngac', 'trung'];
+  function datasetItem(ci, j, seedBase, mild) {
+    const seed = seedBase + ci * 10000 + j, r = rng(seed);
+    let emo = KEYS[ci], k;
+    if (KEYS[ci] === 'trung') { emo = ['buon', 'vui', 'gian', 'ngac'][Math.floor(r() * 4)]; k = r() * 0.18; }
+    else k = (mild && r() < mild) ? 0.45 + r() * 0.2 : 0.75 + r() * 0.25;
+    const item = { emo, k, seed, label: ci, ei: ci, strong: ci === 4 ? null : k > 0.7,
+      skin: Math.floor(r() * SKIN.length), hair: Math.floor(r() * HAIR.length), style: Math.floor(r() * 4), shape: Math.floor(r() * 3) };
+    return item;
+  }
+  const DECK = [];
+  // 25 ảnh kiểm thử T01–T25: cùng thứ tự xáo trộn với thư mục 2_Bo_kiem_thu_25_anh
+  const testRows = [];
+  for (let ci = 0; ci < 5; ci++) for (let j = 0; j < 5; j++) testRows.push(datasetItem(ci, j, 900000, 0.4));
+  testRows.map((x, i) => [x, Math.sin(i * 12.9898) * 43758.5453 % 1]).sort((p, q) => p[1] - q[1])
+    .forEach(([x], i) => { x.id = 'T' + String(i + 1).padStart(2, '0'); x.set = 'test'; DECK.push(x); });
+  // 50 ảnh lấy từ bộ huấn luyện (10 ảnh mỗi cảm xúc), mã H01–H50
+  let h = 0;
+  for (let ci = 0; ci < 5; ci++) for (let j = 0; j < 10; j++) { const x = datasetItem(ci, j * 10, 1, 0.3); x.id = 'H' + String(++h).padStart(2, '0'); x.set = 'train'; DECK.push(x); }
+
+  /* ---------- AI thật: mô hình Teachable Machine của nhóm (mô hình A, học 500 ảnh minh họa)
+     https://teachablemachine.withgoogle.com/models/qRarH3ZZA/ — xác suất đã tính sẵn cho 75 khuôn mặt trong bộ thẻ,
+     theo thứ tự nhãn [Vui, Buồn, Giận, Ngạc nhiên, Trung tính]. ---------- */
+  const TM_MODEL_URL = 'https://teachablemachine.withgoogle.com/models/qRarH3ZZA/';
+  const TM_PROBS = {"900000":[0.999,0,0,0,0],"900001":[1,0,0,0,0],"900002":[1,0,0,0,0],"900003":[1,0,0,0,0],"900004":[0.999,0,0,0,0],"910000":[0.001,0.922,0.077,0,0],"910001":[0.004,0.983,0.013,0,0],"910002":[0,1,0,0,0],"910003":[0,0.999,0.001,0,0],"910004":[0,0.999,0.001,0,0],"920000":[0,0,1,0,0],"920001":[0.005,0.004,0.991,0,0],"920002":[0,0,1,0,0],"920003":[0,0,1,0,0],"920004":[0,0.053,0.947,0,0],"930000":[0,0,0,1,0],"930001":[0,0.001,0,0.994,0.006],"930002":[0,0,0,1,0],"930003":[0,0,0,1,0],"930004":[0,0.001,0,0.999,0],"940000":[0.269,0.689,0.041,0,0.001],"940001":[0.016,0.979,0.001,0.001,0.003],"940002":[0,0,0,0,1],"940003":[0,0.002,0,0.008,0.989],"940004":[0.002,0,0,0,0.998],"1":[1,0,0,0,0],"11":[1,0,0,0,0],"21":[1,0,0,0,0],"31":[1,0,0,0,0],"41":[1,0,0,0,0],"51":[1,0,0,0,0],"61":[1,0,0,0,0],"71":[1,0,0,0,0],"81":[1,0,0,0,0],"91":[1,0,0,0,0],"10001":[0,1,0,0,0],"10011":[0.004,0.984,0.011,0,0],"10021":[0,0.999,0,0,0],"10031":[0,0.984,0.016,0,0],"10041":[0,1,0,0,0],"10051":[0,1,0,0,0],"10061":[0,1,0,0,0],"10071":[0,1,0,0,0],"10081":[0,1,0,0,0],"10091":[0,1,0,0,0],"20001":[0.005,0.582,0.398,0,0.014],"20011":[0,0,1,0,0],"20021":[0,0.001,0.999,0,0],"20031":[0,0,1,0,0],"20041":[0,0,1,0,0],"20051":[0,0,1,0,0],"20061":[0.146,0.002,0.732,0,0.12],"20071":[0.001,0,0.999,0,0],"20081":[0,0,1,0,0],"20091":[0.001,0.001,0.996,0,0.002],"30001":[0,0,0,1,0],"30011":[0,0,0,1,0],"30021":[0,0,0,1,0],"30031":[0,0,0,0.999,0.001],"30041":[0.001,0.001,0,0.997,0.001],"30051":[0,0,0,1,0],"30061":[0,0,0,1,0],"30071":[0,0,0,1,0],"30081":[0,0,0,1,0],"30091":[0,0,0,1,0],"40001":[0.002,0,0,0,0.998],"40011":[0.155,0,0.001,0.001,0.843],"40021":[0,0,0,0,0.999],"40031":[0.249,0.011,0.167,0,0.573],"40041":[0.006,0,0,0,0.993],"40051":[0,0,0.001,0,0.999],"40061":[0,0,0,0,1],"40071":[0,0.001,0.002,0,0.997],"40081":[0,0,0,0,1],"40091":[0,0,0,0,1]};
+  function aiPredict(d) {
+    const probs = TM_PROBS[d.seed];
+    return { guess: probs.indexOf(Math.max(...probs)), probs };
+  }
+  DECK.forEach(d => d.ai = aiPredict(d));
+
+  /* ---------- state & storage ---------- */
+  const zero = () => EMO.map(() => EMO.map(() => 0));
+  let me = { hm: zero(), am: zero(), sessions: [] };
+  let classDocs = [];
+  let db = null, uid = null, canSave = false;
+  try { const raw = localStorage.getItem('dvcx-me'); if (raw) { const o = JSON.parse(raw); if (o && o.hm) me = o; } } catch (e) {}
+  function saveLocal() { try { localStorage.setItem('dvcx-me', JSON.stringify(me)); } catch (e) {} }
+  const status = t => $('#save-status').textContent = t;
+
+  (async () => {
+    try {
+      const [dbNs, user] = await Promise.all([window.claude?.use?.('db'), window.claude?.use?.('user')]);
+      db = dbNs || null; uid = user ? await user.id() : null;
+      if (!db || !uid) { status('Kết quả chỉ lưu trên trình duyệt này (cần đăng nhập để góp vào bảng của lớp)'); return; }
+      canSave = true; status('Kết quả được lưu ẩn danh và góp vào bảng của lớp');
+      db.collection('class').onSnapshot(snap => {
+        classDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const mine = classDocs.find(d => d.id === uid);
+        if (mine && mine.hm && (mine.sessions || []).length >= (me.sessions || []).length) { me = { hm: mine.hm, am: mine.am, sessions: mine.sessions || [] }; saveLocal(); }
+        renderAll();
+      }, () => status('Mất kết nối với nơi lưu kết quả của lớp'));
+    } catch (e) { status('Kết quả chỉ lưu trên trình duyệt này'); }
+  })();
+
+  async function persist() {
+    saveLocal();
+    if (!canSave) return;
+    try { await db.doc('class/' + uid).set({ v: 1, hm: me.hm, am: me.am, sessions: me.sessions.slice(-40), updated: Date.now() }); status('Đã lưu lượt luyện vào bảng của lớp'); }
+    catch (e) { canSave = false; status('Bạn chưa có quyền ghi vào bảng của lớp. Kết quả vẫn được lưu trên trình duyệt này.'); }
+  }
+
+  /* ---------- navigation ---------- */
+  const views = ['home', 'practice', 'me', 'class', 'sci'];
+  function go(v) {
+    views.forEach(x => $('#v-' + x).hidden = x !== v);
+    document.querySelectorAll('.nav button').forEach(b => b.dataset.view === v ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
+    renderAll(); window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => go(b.dataset.view)));
+  document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) { go(g.dataset.go); if (g.dataset.go === 'practice' && g.dataset.start) startSession(); } });
+
+  /* ---------- helpers ---------- */
+  const sum = a => a.reduce((x, y) => x + y, 0);
+  const diag = m => sum(m.map((r, i) => r[i]));
+  const total = m => sum(m.map(sum));
+  const pct = (a, b) => b ? Math.round(100 * a / b) : null;
+  const fmt = v => v === null ? '–' : v + '%';
+  function tile(lbl, val, unit) { return `<div class="tile"><div class="lbl">${lbl}</div><div class="val">${val}${unit ? `<span class="unit">${unit}</span>` : ''}</div></div>`; }
+  function pairBars(hm, am, hLabel) {
+    return `<div class="legend"><span><i style="background:var(--accent)"></i>${hLabel}</span><span><i style="background:var(--rose)"></i>AI (Teachable Machine)</span></div><div class="bars">` +
+      EMO.map((e, i) => {
+        const h = pct(hm[i][i], sum(hm[i])), a = pct(am[i][i], sum(am[i]));
+        return `<div class="bar-row"><span class="tag" style="--c:${e.c}"><i></i>${e.name}</span><div class="pair">
+          <div class="b"><div class="track"><div class="fill" style="width:${h || 0}%;background:var(--accent)"></div></div><span class="pct">${fmt(h)}</span></div>
+          <div class="b"><div class="track"><div class="fill" style="width:${a || 0}%;background:var(--rose)"></div></div><span class="pct">${fmt(a)}</span></div></div></div>`;
+      }).join('') + '</div>';
+  }
+  function matrix(m, asPct) {
+    const rowsum = m.map(sum);
+    let html = '<div class="matrix-wrap"><table class="matrix"><thead><tr><th class="r">Thật ↓ / Chọn →</th>' + EMO.map(e => `<th>${e.name}</th>`).join('') + '</tr></thead><tbody>';
+    m.forEach((row, i) => {
+      html += `<tr><th class="r">${EMO[i].name}</th>`;
+      row.forEach((v, j) => {
+        const share = rowsum[i] ? v / rowsum[i] : 0;
+        const bg = `color-mix(in srgb, ${i === j ? 'var(--good)' : 'var(--bad)'} ${Math.round(share * 70)}%, var(--surface-2))`;
+        html += `<td class="${i === j ? 'diag' : ''}" style="background:${bg}">${asPct ? (rowsum[i] ? Math.round(share * 100) + '%' : '–') : v}</td>`;
+      });
+      html += '</tr>';
+    });
+    return html + '</tbody></table></div>';
+  }
+  const emptyBox = (t, s) => `<div class="empty"><b>${t}</b>${s}</div>`;
+
+  /* ---------- home ---------- */
+  function renderHome() {
+    const picks = [DECK.find(d => d.label === 0 && d.strong), DECK.find(d => d.label === 3 && d.strong), DECK.find(d => d.label === 1 && d.strong)];
+    $('#hero-faces').innerHTML = picks.map(d => `<div class="mini">${faceSVG(d)}</div>`).join('');
+    const n = total(me.hm), c = diag(me.hm);
+    const cl = aggregate();
+    $('#home-tiles').innerHTML = tile('Bạn đã trả lời', n, 'ảnh') + tile('Tỷ lệ đúng của bạn', fmt(pct(c, n))) +
+      tile('Người tham gia trong lớp', cl.people) + tile('Lớp so với AI', cl.n ? `${fmt(pct(diag(cl.hm), cl.n))}<span class="unit">vs ${fmt(pct(diag(cl.am), total(cl.am)))}</span>` : '–');
+  }
+
+  /* ---------- practice ---------- */
+  let sess = null;
+  const emoBox = $('#pr-emos');
+  EMO.forEach((e, i) => {
+    const b = document.createElement('button');
+    b.className = 'emo'; b.style.setProperty('--c', e.c);
+    b.innerHTML = `<i></i>${e.name}<small>phím ${i + 1}</small>`;
+    b.addEventListener('click', () => answer(i));
+    emoBox.appendChild(b);
+  });
+  function startSession() {
+    const order = DECK.map(d => d).sort(() => Math.random() - .5).slice(0, 10);
+    sess = { items: order, i: 0, answers: [] };
+    $('#pr-intro').hidden = true; $('#pr-done').hidden = true; $('#pr-run').hidden = false;
+    showItem();
+  }
+  $('#pr-start').addEventListener('click', startSession);
+  function showItem() {
+    const d = sess.items[sess.i];
+    $('#pr-face').innerHTML = faceSVG(d, 340);
+    $('#pr-id').textContent = d.id;
+    $('#pr-int').textContent = d.strong === null ? 'Không biểu cảm' : (d.strong ? 'Biểu cảm rõ' : 'Biểu cảm nhẹ');
+    $('#pr-count').textContent = `${sess.i + 1} / ${sess.items.length}`;
+    emoBox.querySelectorAll('button').forEach(b => { b.disabled = false; b.classList.remove('right', 'wrong'); });
+    $('#pr-fb').hidden = true; sess.locked = false;
+  }
+  function answer(g) {
+    if (!sess || sess.locked || $('#v-practice').hidden || $('#pr-run').hidden) return;
+    sess.locked = true;
+    const d = sess.items[sess.i], t = d.label, ok = g === t;
+    sess.answers.push({ t, g, a: d.ai.guess });
+    const btns = [...emoBox.querySelectorAll('button')];
+    btns.forEach((b, j) => { b.disabled = true; if (j === t) b.classList.add('right'); });
+    if (!ok) btns[g].classList.add('wrong');
+    const aiOk = d.ai.guess === t;
+    const order = [0, 1, 2, 3, 4].sort((a, b) => d.ai.probs[b] - d.ai.probs[a]);
+    const fb = $('#pr-fb');
+    fb.innerHTML = `
+      <p class="verdict ${ok ? 'ok' : 'no'}">${ok ? 'Chính xác! Đây là ' + EMO[t].name.toLowerCase() + '.' : 'Đây là ' + EMO[t].name.toLowerCase() + ', không phải ' + EMO[g].name.toLowerCase() + '.'}</p>
+      <p class="cue"><b>Dấu hiệu của ${EMO[t].name.toLowerCase()}:</b> lông mày ${CUES[t].brow.toLowerCase()}; mắt ${CUES[t].eye.toLowerCase()}; ${CUES[t].mouth.toLowerCase()}.${d.strong === false ? ' Khuôn mặt này biểu cảm nhẹ nên khó nhận ra hơn.' : ''}</p>
+      <div class="ai-box"><h4><span>AI đoán: ${EMO[d.ai.guess].name}</span><span style="color:${aiOk ? 'var(--good)' : 'var(--bad)'}">${aiOk ? 'AI đúng' : 'AI sai'}</span></h4>
+        ${order.map(i => `<div class="prob ${i === d.ai.guess ? 'top' : ''}" style="--c:${EMO[i].c}"><span>${EMO[i].name}</span><div class="track"><div class="fill" style="width:${Math.round(d.ai.probs[i] * 100)}%"></div></div><span class="pct">${Math.round(d.ai.probs[i] * 100)}%</span></div>`).join('')}
+      </div>
+      <div class="row"><button class="btn sm" id="pr-next">${sess.i + 1 < sess.items.length ? 'Khuôn mặt tiếp theo' : 'Xem kết quả lượt này'}</button><span class="note">hoặc bấm Enter</span></div>`;
+    fb.hidden = false;
+    $('#pr-next').addEventListener('click', next);
+    $('#pr-next').focus({ preventScroll: true });
+  }
+  function next() {
+    if (!sess) return;
+    sess.i++;
+    if (sess.i < sess.items.length) return showItem();
+    finish();
+  }
+  async function finish() {
+    const ans = sess.answers;
+    ans.forEach(x => { me.hm[x.t][x.g]++; me.am[x.t][x.a]++; });
+    const c = ans.filter(x => x.t === x.g).length, a = ans.filter(x => x.t === x.a).length;
+    me.sessions.push({ t: Date.now(), n: ans.length, c, a });
+    $('#pr-run').hidden = true;
+    const misses = {}; ans.filter(x => x.t !== x.g).forEach(x => { const k = x.t + '>' + x.g; misses[k] = (misses[k] || 0) + 1; });
+    const top = Object.entries(misses).sort((p, q) => q[1] - p[1])[0];
+    const line = c > a ? `Bạn thắng AI ${c} – ${a}!` : c < a ? `AI thắng lượt này ${a} – ${c}.` : `Hòa ${c} – ${a}.`;
+    const tipLine = top ? (() => { const [t, g] = top[0].split('>').map(Number); return `Bạn hay nhầm <b>${EMO[t].name.toLowerCase()}</b> thành <b>${EMO[g].name.toLowerCase()}</b>. ${CUES[t].tip}`; })() : 'Bạn không nhầm câu nào. Thử thêm lượt nữa để xem có giữ được phong độ không.';
+    $('#pr-done').innerHTML = `
+      <h2>${line}</h2>
+      <p class="sub">Trên cùng 10 khuôn mặt.</p>
+      <div class="tiles" style="grid-template-columns:repeat(3,minmax(0,1fr))">${tile('Bạn đúng', c, '/ 10')}${tile('AI đúng', a, '/ 10')}${tile('Tổng số ảnh bạn đã luyện', total(me.hm))}</div>
+      <p class="cue" style="margin-bottom:14px">${tipLine}</p>
+      <div class="row"><button class="btn" id="pr-again">Luyện thêm 10 ảnh</button><button class="btn ghost" data-go="me">Xem tiến bộ của tôi</button></div>`;
+    $('#pr-done').hidden = false;
+    $('#pr-again').addEventListener('click', startSession);
+    sess = null;
+    await persist();
+  }
+  document.addEventListener('keydown', e => {
+    if ($('#v-practice').hidden || !sess) return;
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 5 && !sess.locked) answer(n - 1);
+    else if (e.key === 'Enter' && sess.locked && document.activeElement?.id !== 'pr-next') next();
+  });
+
+  /* ---------- me ---------- */
+  function renderMe() {
+    const n = total(me.hm), c = diag(me.hm), a = diag(me.am);
+    const ss = me.sessions || [];
+    const best = ss.length ? Math.max(...ss.map(s => pct(s.c, s.n))) : null;
+    $('#me-tiles').innerHTML = tile('Số lượt luyện', ss.length) + tile('Ảnh đã trả lời', n) + tile('Tỷ lệ đúng của bạn', fmt(pct(c, n))) + tile('AI trên cùng ảnh', fmt(pct(a, total(me.am))));
+    if (!ss.length) {
+      const msg = emptyBox('Chưa có lượt luyện nào', 'Hoàn thành một lượt 10 ảnh để thấy tiến bộ của bạn ở đây.') + '<div style="text-align:center"><button class="btn sm" data-go="practice">Luyện ngay</button></div>';
+      $('#me-hist').innerHTML = msg; $('#me-emo').innerHTML = emptyBox('Chưa có dữ liệu', ''); $('#me-matrix').innerHTML = emptyBox('Chưa có dữ liệu', '');
+      return;
+    }
+    const last = ss.slice(-12);
+    $('#me-hist').innerHTML = `<div class="hist">${last.map(s => { const p = pct(s.c, s.n); return `<div class="col"><span class="v">${p}%</span><div class="bar" style="height:${Math.max(p, 2)}%"></div></div>`; }).join('')}</div>
+      <div class="hist-x">${last.map((s, i) => `<span>L${ss.length - last.length + i + 1}</span>`).join('')}</div>
+      <p class="note" style="margin:8px 0 0">Lượt tốt nhất: ${best}%. Đường kẻ dưới cùng là 0%.</p>`;
+    $('#me-emo').innerHTML = pairBars(me.hm, me.am, 'Bạn');
+    $('#me-matrix').innerHTML = matrix(me.hm, false);
+  }
+
+  /* ---------- class ---------- */
+  function aggregate() {
+    const hm = zero(), am = zero(); let people = 0;
+    const docs = classDocs.length ? classDocs : (total(me.hm) ? [me] : []);
+    docs.forEach(d => { if (!d.hm || !total(d.hm)) return; people++; d.hm.forEach((r, i) => r.forEach((v, j) => { hm[i][j] += v; am[i][j] += (d.am?.[i]?.[j] || 0); })); });
+    return { hm, am, people, n: total(hm) };
+  }
+  function renderClass() {
+    const cl = aggregate();
+    const h = pct(diag(cl.hm), cl.n), a = pct(diag(cl.am), total(cl.am));
+    $('#cl-tiles').innerHTML = tile('Người tham gia', cl.people) + tile('Tổng câu trả lời', cl.n) + tile('Lớp đúng', fmt(h)) + tile('AI đúng', fmt(a));
+    if (!cl.n) {
+      $('#cl-emo').innerHTML = emptyBox('Chưa ai luyện', 'Khi các bạn trong lớp hoàn thành lượt luyện, kết quả gộp sẽ hiện ở đây.');
+      $('#cl-matrix-h').innerHTML = emptyBox('Chưa có dữ liệu', ''); $('#cl-matrix-a').innerHTML = emptyBox('Chưa có dữ liệu', '');
+      $('#cl-note').textContent = ''; return;
+    }
+    $('#cl-emo').innerHTML = pairBars(cl.hm, cl.am, 'Cả lớp');
+    $('#cl-matrix-h').innerHTML = matrix(cl.hm, true);
+    $('#cl-matrix-a').innerHTML = matrix(cl.am, true);
+    $('#cl-note').textContent = classDocs.length ? 'Số liệu cập nhật trực tiếp khi có người hoàn thành lượt luyện. Chỉ lưu mã ẩn danh, không lưu tên.' : 'Đang hiện kết quả của riêng bạn vì chưa kết nối được bảng của lớp.';
+  }
+
+  /* ---------- science ---------- */
+  $('#sci-rows').innerHTML = EMO.map((e, i) => `<tr><td><span class="tag" style="--c:${e.c}"><i></i>${e.name}</span></td><td>${CUES[i].brow}</td><td>${CUES[i].eye}</td><td>${CUES[i].mouth}</td></tr>`).join('');
+
+  function renderAll() {
+    if (!$('#v-home').hidden) renderHome();
+    if (!$('#v-me').hidden) renderMe();
+    if (!$('#v-class').hidden) renderClass();
+  }
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
